@@ -1,24 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getToken } from "next-auth/jwt";
 import { prisma } from "@/lib/prisma";
 import { generateApiKey, hashKey, getKeyPrefix } from "@/lib/api-keys";
 
-async function getUser() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) return null;
+async function getUser(req: NextRequest) {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  if (!token?.email) return null;
 
   // Ensure user exists in DB (JWT strategy doesn't auto-create)
   let user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { email: token.email },
   });
 
   if (!user) {
     user = await prisma.user.create({
       data: {
-        email: session.user.email,
-        name: session.user.name,
-        image: session.user.image,
+        email: token.email,
+        name: token.name ?? null,
+        image: (token.picture as string) ?? null,
       },
     });
   }
@@ -26,8 +25,8 @@ async function getUser() {
   return user;
 }
 
-export async function GET() {
-  const user = await getUser();
+export async function GET(req: NextRequest) {
+  const user = await getUser(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const keys = await prisma.apiKey.findMany({
@@ -40,7 +39,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const user = await getUser();
+  const user = await getUser(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   let body: { name?: unknown };
@@ -70,7 +69,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const user = await getUser();
+  const user = await getUser(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   let body: { id?: unknown };

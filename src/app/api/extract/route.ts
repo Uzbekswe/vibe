@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getToken } from "next-auth/jwt";
 import { validateApiKey } from "@/lib/api-keys";
 import { extractBrandAssets } from "@/lib/extractor";
 
@@ -65,8 +64,8 @@ async function authenticateRequest(req: NextRequest): Promise<boolean> {
   }
 
   // 2. Session cookie (logged-in user)
-  const session = await getServerSession(authOptions);
-  if (session?.user) return true;
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  if (token) return true;
 
   // 3. Same-origin request (homepage form) — verify via Referer + Origin
   const origin = req.headers.get("origin");

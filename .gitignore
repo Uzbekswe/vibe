@@ -7,3 +7,4 @@ dev.db-journal
 
 /src/generated/prisma
 .DS_Store
+.vercel
