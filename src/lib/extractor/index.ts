@@ -13,7 +13,7 @@ export async function extractBrandAssets(url: string): Promise<BrandAssets> {
       Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
       "Accept-Language": "en-US,en;q=0.9",
     },
-    signal: AbortSignal.timeout(15000),
+    signal: AbortSignal.timeout(8000),
     redirect: "follow",
   });
 
