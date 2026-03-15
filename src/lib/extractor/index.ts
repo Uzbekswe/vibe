@@ -33,8 +33,7 @@ export async function extractBrandAssets(url: string): Promise<BrandAssets> {
   // Extract brand name from <title> or og:site_name
   const brandName =
     $('meta[property="og:site_name"]').attr("content") ??
-    $("title").first().text().split(/[|\-–—]/)[0].trim() ??
-    new URL(url).hostname;
+    ($("title").first().text().split(/[|\-–—]/)[0].trim() || new URL(url).hostname);
 
   // Run all extractors in parallel
   const logos = extractLogos($, baseUrl);

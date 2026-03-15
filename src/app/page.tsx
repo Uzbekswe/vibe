@@ -75,7 +75,7 @@ export default function Home() {
 
       {assets && <ResultCard assets={assets} />}
 
-      <GetStarted />
+      <GetStarted searchedUrl={assets ? url.trim() : undefined} brandName={assets?.brand_name} />
     </main>
   );
 }

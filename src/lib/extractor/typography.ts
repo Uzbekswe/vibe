@@ -92,7 +92,8 @@ function parseCssForFonts(css: string, fonts: Map<string, FontAccumulator>) {
   let ast: csstree.CssNode;
   try {
     ast = csstree.parse(css, { parseCustomProperty: false });
-  } catch {
+  } catch (err) {
+    console.warn("[typography] CSS parse error:", err instanceof Error ? err.message : err);
     return;
   }
 
@@ -209,7 +210,8 @@ function parseGoogleFontsUrl(
       if (weights.length === 0) weights.push(400);
       return { family, weights };
     });
-  } catch {
+  } catch (err) {
+    console.warn("[typography] Google Fonts URL parse error:", err instanceof Error ? err.message : err);
     return [];
   }
 }
