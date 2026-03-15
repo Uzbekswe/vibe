@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: ["css-tree", "sharp"],
+  experimental: {
+    serverComponentsExternalPackages: ["css-tree", "sharp"],
+  },
 };
 module.exports = nextConfig;
